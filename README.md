@@ -14,7 +14,7 @@ Answers questions based on a loaded knowledge base. Built incrementally: MVP →
 |---|---|
 | **Python 3.12** + **FastAPI** | web framework + ASGI |
 | **Pydantic v2** | data validation and configuration |
-| **Anthropic SDK** | Claude Sonnet 4.6 (demo mode) |
+| **Anthropic SDK** | Claude Haiku 4.5 (demo mode) |
 | **Ollama** | llama3.2 locally (dev mode) |
 | **SlowAPI** | rate limiting |
 | **SSE** | response streaming without WebSocket |
