@@ -8,12 +8,15 @@
 
 ## Правила общения и кода
 
-- **Всё общение в чате — на русском.**
+- **Всё общение в чате — на русском.** Вывод информации о размышлениях в консоль — тоже на русском.
 - **Этот файл (CLAUDE.md) — на русском.**
 - **Все комментарии в коде — на английском.**
 - Имена переменных, функций, файлов — на английском.
 - Объяснять шаги подробно: цель проекта — обучение, а не только результат.
   Каждую новую команду/концепцию кратко пояснять.
+- **Не запускать сборку (build) для проверки кода. Не запускать dev-сервер самостоятельно.**
+- **Никогда не делать коммиты в git.**
+- **Для документации библиотек и примеров кода использовать context7 MCP.**
 
 ## Цель автора
 
@@ -73,6 +76,61 @@ src/
 - `index.ts` — только реэкспорт. Файлы с логикой называем по смыслу: `healthApi.ts`, `chatApi.ts`.
 - Границы слоёв защищены `eslint-plugin-boundaries` + `eslint-import-resolver-typescript`.
   Неверный импорт (например из `shared` в `features`) — ошибка линтера. Проверка: `npm run lint`.
+
+#### Правила импортов
+
+```typescript
+// ✅ Правильно — через публичный API (index.ts)
+import { Button } from "@/shared/ui";
+import { ChatWidget } from "@/features/chat";
+
+// ❌ Неправильно — прямые импорты обходят публичный API
+import { Button } from "@/shared/ui/Button/Button";
+import ChatWidget from "@/features/chat/components/ChatWidget";
+```
+
+Каждый слайс экспортирует публичный API через `index.ts`. Экспортировать нужно прямо из компонентов и модулей, без промежуточных `index.ts` на каждом уровне вложенности.
+
+#### Правила компонентов
+
+- Функциональные компоненты с TypeScript.
+- Тип `FC` из React для всех компонентов.
+- Интерфейс пропсов называется `Props` (если не экспортируется).
+- Деструктуризация пропсов — на отдельной строке, не в параметрах функции.
+- Только именованные экспорты, никогда `export default`.
+- Для комбинирования классов — утилита `cn` из `@/shared/lib`, не шаблонные строки.
+
+```typescript
+// ✅ Правильно
+import { FC, ReactNode } from "react";
+import { cn } from "@/shared/lib";
+
+interface Props {
+  children: ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  variant: "primary" | "secondary";
+}
+
+export const Button: FC<Props> = (props) => {
+  const { children, onClick, disabled, variant } = props;
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(s.button, s[variant], disabled && s.disabled)}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ❌ Неправильно — нет FC, деструктуризация в параметрах, export default
+export default function Button({ children, onClick }: Props) {
+  return <button onClick={onClick}>{children}</button>;
+}
+```
 
 ### Связь
 
