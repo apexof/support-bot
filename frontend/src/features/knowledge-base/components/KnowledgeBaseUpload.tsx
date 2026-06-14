@@ -5,7 +5,7 @@ import { useKnowledgeBase } from "../hooks/useKnowledgeBase"
 import s from "./KnowledgeBaseUpload.module.css"
 
 export const KnowledgeBaseUpload: FC = () => {
-  const { status, isUploading, uploadError, upload, remove } = useKnowledgeBase()
+  const { status, isUploading, error, upload, remove } = useKnowledgeBase()
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -60,7 +60,7 @@ export const KnowledgeBaseUpload: FC = () => {
           <span className={s.hint}>Загрузить базу знаний (.txt, .md)</span>
         </>
       )}
-      {uploadError && <span className={s.error}>{uploadError}</span>}
+      {error && <span className={s.error}>{error}</span>}
     </div>
   )
 }

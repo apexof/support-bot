@@ -1,2 +1,3 @@
-export { uploadKnowledgeBase, fetchKnowledgeBaseStatus, deleteKnowledgeBase } from "./knowledgeBaseApi"
-export type { KnowledgeBaseStatus } from "./knowledgeBaseApi"
+export { uploadKnowledgeBase } from "./uploadKnowledgeBase"
+export { fetchKnowledgeBaseStatus } from "./fetchKnowledgeBaseStatus"
+export { deleteKnowledgeBase } from "./deleteKnowledgeBase"
