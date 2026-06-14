@@ -8,3 +8,10 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
+
+@media (min-width: 780px) {
+  .root {
+    margin-right: calc((100vw - 780px) / -2);
+    padding-right: calc(24px + (100vw - 780px) / 2);
+  }
+}
