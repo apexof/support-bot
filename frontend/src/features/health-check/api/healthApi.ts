@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { client } from "@/shared/api";
+import { apiClient } from "@/shared/api";
 
 const healthSchema = z.object({
   status: z.string(),
@@ -9,6 +9,6 @@ const healthSchema = z.object({
 export type HealthResponse = z.infer<typeof healthSchema>;
 
 export async function getHealth(): Promise<HealthResponse> {
-  const { data } = await client.get<unknown>("/health");
+  const data = await apiClient<unknown>("/health");
   return healthSchema.parse(data);
 }

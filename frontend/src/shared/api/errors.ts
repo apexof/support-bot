@@ -1,15 +1,9 @@
-import { isAxiosError } from "axios";
-import { z } from "zod";
+export class ApiError extends Error {
+  readonly status: number;
 
-const apiErrorSchema = z.object({ detail: z.string() });
-
-export function getErrorMessage(error: unknown): string {
-  if (isAxiosError(error)) {
-    const parsed = apiErrorSchema.safeParse(error.response?.data);
-    return parsed.success ? parsed.data.detail : error.message;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
   }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return "Unknown error";
 }

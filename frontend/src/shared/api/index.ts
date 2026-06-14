@@ -1,2 +1,3 @@
-export { client } from "./client";
-export { getErrorMessage } from "./errors";
+export { apiClient } from "./client";
+export { ApiError } from "./errors";
+export { getErrorMessage } from "./getErrorMessage";
