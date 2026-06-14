@@ -1,11 +1,21 @@
+import os
 from typing import Literal
 
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+_env = os.getenv("APP_ENV", "development")
+
+# Files are merged in order — later files override earlier ones.
+# .env.local is never committed and holds secrets (ANTHROPIC_API_KEY).
+_env_files = (f".env.{_env}", ".env.local")
+
 
 class Config(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=_env_files,
+        env_file_encoding="utf-8",
+    )
 
     LLM_PROVIDER: Literal["ollama", "claude"] = "ollama"
 
