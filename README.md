@@ -1,90 +1,103 @@
 # Support Bot
 
-> RAG-чат-бот поддержки — пет-проект на пути к роли AI/LLM Application Engineer.
+> A RAG support chatbot — a pet project on the path to becoming an AI/LLM Application Engineer.
 
-Отвечает на вопросы по загруженной базе знаний. Развивается поэтапно: MVP → RAG → эвалы → агент → прод.
+Answers questions based on a loaded knowledge base. Built incrementally: MVP → RAG → evals → agent → production.
 
 ---
 
-## Стек
+## Stack
 
 ### Backend
+
 | | |
 |---|---|
-| **Python 3.12** + **FastAPI** | веб-фреймворк + ASGI |
-| **Pydantic v2** | валидация данных и конфигурации |
-| **Anthropic SDK** | Claude Sonnet 4.6 (demo-режим) |
-| **Ollama** | llama3.2 локально (dev-режим) |
-| **SSE** | стриминг ответов без WebSocket |
+| **Python 3.12** + **FastAPI** | web framework + ASGI |
+| **Pydantic v2** | data validation and configuration |
+| **Anthropic SDK** | Claude Sonnet 4.6 (demo mode) |
+| **Ollama** | llama3.2 locally (dev mode) |
+| **SlowAPI** | rate limiting |
+| **SSE** | response streaming without WebSocket |
 
 ### Frontend
+
 | | |
 |---|---|
 | **React 19** + **TypeScript** + **Vite** | UI |
-| **TanStack Query v5** | серверный стейт |
-| **Zod v4** | валидация ответов API в рантайме |
-| **Feature-Sliced Design** | архитектура |
-| **CSS Modules** | стилизация |
+| **TanStack Query v5** | server state management |
+| **Zod v4** | runtime API response validation |
+| **eventsource-parser** | SSE stream parsing |
+| **Feature-Sliced Design** | architecture |
+| **CSS Modules** | styling |
 
 ---
 
-## Архитектура
+## Architecture
 
-### Переключение LLM-провайдера
+### LLM provider switching
 
-Вызов модели вынесен за единый интерфейс `LLMProvider`. Переключение — одна переменная в `.env`, без правок логики:
+Model calls are behind a single `LLMProvider` interface. Switching is one variable in `.env`, no logic changes needed:
 
 ```
-LLM_PROVIDER=ollama   # локальная разработка, бесплатно
+LLM_PROVIDER=ollama   # local development, free
 LLM_PROVIDER=claude   # demo, Claude Sonnet 4.6
 ```
 
 ```
 llm/
-├── base.py      # абстрактный класс LLMProvider
+├── base.py      # abstract LLMProvider class
 ├── claude.py    # ClaudeProvider
 ├── ollama.py    # OllamaProvider
-└── factory.py   # get_provider() — выбор по переменной
+└── factory.py   # get_provider() — selects by env var
 ```
 
 ### Frontend — Feature-Sliced Design
 
 ```
 src/
-├── app/          # глобальные провайдеры (QueryClient)
-├── pages/        # только композиция фич, никакой логики
+├── app/               # global providers (QueryClient)
+├── pages/             # composition only, no logic
 ├── features/
-│   └── chat/
-│       ├── api/        # zod-схемы, функции запросов
-│       ├── hooks/      # useChat
-│       ├── components/ # ChatWidget, MessageList, ChatInput, MessageBubble
-│       └── index.ts    # публичный API фичи
+│   ├── chat/
+│   │   ├── api/       # zod schemas, request functions
+│   │   ├── hooks/     # useChat
+│   │   ├── components/# ChatWidget, MessageList, ChatInput, MessageBubble
+│   │   ├── types.ts   # domain types (Message, etc.)
+│   │   └── index.ts   # public feature API
+│   └── health-check/
+│       ├── api/       # healthApi, health schema
+│       ├── hooks/     # useHealth
+│       └── index.ts
 └── shared/
-    ├── api/      # axios client, getErrorMessage
-    ├── config/   # env-переменные
-    ├── lib/      # cn (classnames)
-    └── ui/       # Button
+    ├── api/       # fetch client, getErrorMessage
+    ├── config/    # env variables
+    ├── lib/       # cn (classnames)
+    └── ui/        # Button
 ```
 
-Слои импортируют только вниз: `pages → features → shared`. Границы защищены `eslint-plugin-boundaries` — неверный импорт = ошибка линтера.
+Layers import only downward: `pages → features → shared`. Boundaries are enforced by `eslint-plugin-boundaries` — a wrong import is a lint error.
 
 ---
 
-## Структура проекта
+## Project structure
 
 ```
 support-bot/
+├── Makefile
+├── .pre-commit-config.yaml
 ├── backend/
 │   ├── chat/
-│   │   ├── router.py    # HTTP-эндпоинты
-│   │   ├── schemas.py   # Pydantic-модели
-│   │   └── service.py   # бизнес-логика
-│   ├── llm/             # абстракция провайдеров
+│   │   ├── router.py    # HTTP endpoints
+│   │   ├── schemas.py   # Pydantic models
+│   │   └── service.py   # business logic
+│   ├── llm/             # provider abstraction
 │   ├── prompts/
 │   │   └── system.txt   # system prompt
 │   ├── config.py        # Pydantic Settings
-│   ├── main.py          # FastAPI app
-│   └── requirements.txt
+│   ├── limiter.py       # SlowAPI rate limiter setup
+│   ├── main.py          # FastAPI app, CORS, /health
+│   ├── requirements.txt
+│   └── requirements-dev.txt
 └── frontend/
     └── src/
         ├── app/
@@ -95,24 +108,24 @@ support-bot/
 
 ---
 
-## Быстрый старт
+## Quick start
 
-### 1. Установка зависимостей
+### 1. Install dependencies
 
 ```bash
 make install
 ```
 
-Под капотом: создаёт `backend/.venv`, ставит Python-пакеты из `requirements-dev.txt` и запускает `npm install` в `frontend/`.
+Creates `backend/.venv`, installs Python packages from `requirements-dev.txt`, and runs `npm install` in `frontend/`.
 
-### 2. Конфигурация
+### 2. Configure
 
 `backend/.env`:
 
 ```env
-LLM_PROVIDER=ollama          # или claude
+LLM_PROVIDER=ollama          # or claude
 OLLAMA_MODEL=llama3.2
-# ANTHROPIC_API_KEY=sk-...   # нужен только при LLM_PROVIDER=claude
+# ANTHROPIC_API_KEY=sk-...   # required only when LLM_PROVIDER=claude
 ALLOWED_ORIGINS=["http://localhost:5173"]
 ```
 
@@ -122,52 +135,52 @@ ALLOWED_ORIGINS=["http://localhost:5173"]
 VITE_API_URL=http://localhost:8000
 ```
 
-### 3. Запуск
+### 3. Run
 
 ```bash
-make backend    # FastAPI на :8000
-make frontend   # Vite dev server на :5173
+make backend    # FastAPI on :8000
+make frontend   # Vite dev server on :5173
 ```
 
-### Pre-commit хуки (опционально)
+### Pre-commit hooks (optional)
 
 ```bash
 make setup-hooks
 ```
 
-После этого перед каждым коммитом автоматически запускаются: `ruff` (lint + format check), `mypy` и `eslint` + `tsc`.
+Runs before every commit: `ruff` (lint + format check), `mypy`, `eslint`, and `tsc`.
 
 ---
 
-## Команды разработки
+## Dev commands
 
-| Команда | Что делает |
+| Command | What it does |
 |---|---|
-| `make backend` | Запуск FastAPI dev-сервера |
-| `make frontend` | Запуск Vite dev-сервера |
-| `make install` | Установка всех зависимостей |
-| `make lint` | ESLint + Ruff по всему проекту |
-| `make check` | mypy + tsc — проверка типов |
+| `make backend` | Start FastAPI dev server |
+| `make frontend` | Start Vite dev server |
+| `make install` | Install all dependencies |
+| `make lint` | ESLint + Ruff across the project |
+| `make check` | mypy + tsc type checking |
 | `make format` | Ruff format + Prettier |
-| `make setup-hooks` | Установка pre-commit хуков |
+| `make setup-hooks` | Install pre-commit hooks |
 
 ---
 
 ## Roadmap
 
-| Этап | Статус | Описание |
+| Stage | Status | Description |
 |---|---|---|
-| **MVP** | ✅ готово | документ в system prompt, чат со стримингом |
-| **v1 — RAG** | 🔜 в планах | чанкинг, эмбеддинги, Supabase pgvector, retrieval |
-| **v2 — качество** | ⏳ | hybrid search, reranking, эвалы (RAGAS / Promptfoo) |
-| **v3 — агент** | ⏳ | tool use, agentic RAG |
-| **v4 — прод** | ⏳ | Langfuse tracing, гардрейлы, кэширование, Render deploy |
+| **MVP** | ✅ done | document in system prompt, streaming chat |
+| **v1 — RAG** | 🔜 next | chunking, embeddings, Supabase pgvector, retrieval |
+| **v2 — quality** | ⏳ | hybrid search, reranking, evals (RAGAS / Promptfoo) |
+| **v3 — agent** | ⏳ | tool use, agentic RAG |
+| **v4 — production** | ⏳ | Langfuse tracing, guardrails, caching, Render deploy |
 
 ---
 
-## Принципы
+## Principles
 
-- Секреты только в `.env`, никогда не коммитятся. `ANTHROPIC_API_KEY` живёт исключительно на бекенде.
-- Архитектура закладывается под весь roadmap сразу, реализуется поэтапно — стек по ходу не меняем.
-- Вызов модели — только через `llm/factory.py → LLMProvider`, нигде напрямую к провайдеру.
-- Индустриальный стандарт вместо минимального сопротивления: правильные библиотеки для правильных задач.
+- Secrets live only in `.env` and are never committed. `ANTHROPIC_API_KEY` stays on the backend only.
+- Architecture is designed for the full roadmap upfront, implemented incrementally — the stack does not change mid-way.
+- Model calls go only through `llm/factory.py → LLMProvider`, never directly to a provider.
+- Industry standard over the path of least resistance: the right library for the right job.
