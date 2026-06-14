@@ -1,4 +1,5 @@
 import { type FC, useEffect, useRef } from "react";
+import { useInView } from "react-intersection-observer";
 import { type Message } from "../types";
 import { MessageBubble } from "./MessageBubble";
 import s from "./MessageList.module.css";
@@ -9,14 +10,16 @@ interface Props {
 
 export const MessageList: FC<Props> = (props) => {
   const { messages } = props;
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const { ref: bottomRef, inView } = useInView();
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (!inView || !rootRef.current) return;
+    rootRef.current.scrollTop = rootRef.current.scrollHeight;
+  }, [messages, inView]);
 
   return (
-    <div className={s.root}>
+    <div className={s.root} ref={rootRef}>
       {messages.map((message, index) => (
         <MessageBubble key={index} message={message} />
       ))}

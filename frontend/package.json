@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.0",
-    "axios": "^1.17.0",
     "eventsource-parser": "^3.1.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-intersection-observer": "^10.0.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
