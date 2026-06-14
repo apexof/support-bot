@@ -1,3 +1,5 @@
+from collections.abc import AsyncGenerator
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -29,7 +31,7 @@ class ChatRequest(BaseModel):
     messages: list[Message]
 
 
-async def event_stream(messages: list[dict]) -> str:
+async def event_stream(messages: list[dict]) -> AsyncGenerator[str, None]:
     async for chunk in stream_response(messages, system=SYSTEM_PROMPT):
         yield f"data: {chunk}\n\n"
     yield "data: [DONE]\n\n"
