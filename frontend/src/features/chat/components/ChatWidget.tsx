@@ -1,5 +1,6 @@
 import { type FC } from "react"
 import { useChat } from "../hooks/useChat"
+import { ChatHeader } from "./ChatHeader"
 import { ChatInput } from "./ChatInput"
 import s from "./ChatWidget.module.css"
 import { MessageList } from "./MessageList"
@@ -9,9 +10,7 @@ export const ChatWidget: FC = () => {
 
   return (
     <div className={s.root}>
-      <header className={s.header}>
-        <h1>Support Bot</h1>
-      </header>
+      <ChatHeader />
       <MessageList messages={messages} error={error} />
       <ChatInput
         onSend={(content) => {
