@@ -1,33 +1,17 @@
-import { useState } from "react";
-import { getHealth, type HealthResponse } from "./api";
+import { getErrorMessage } from "./api";
+import { useHealth } from "./hooks/useHealth";
 
 function App() {
-  const [result, setResult] = useState<HealthResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function ping() {
-    setLoading(true);
-    setResult(null);
-    setError(null);
-    try {
-      const data = await getHealth();
-      setResult(data);
-    } catch (err) {
-      setError(String(err));
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { data, error, isFetching, refetch } = useHealth();
 
   return (
     <div style={{ padding: 32, fontFamily: "monospace" }}>
       <h1>Support Bot</h1>
-      <button onClick={ping} disabled={loading}>
-        {loading ? "Loading..." : "Ping backend /health"}
+      <button onClick={() => refetch()} disabled={isFetching}>
+        {isFetching ? "Loading..." : "Ping backend /health"}
       </button>
-      {result && <pre style={{ marginTop: 16 }}>{JSON.stringify(result, null, 2)}</pre>}
-      {error && <pre style={{ marginTop: 16, color: "red" }}>{error}</pre>}
+      {data && <pre style={{ marginTop: 16 }}>{JSON.stringify(data, null, 2)}</pre>}
+      {error && <pre style={{ marginTop: 16, color: "red" }}>{getErrorMessage(error)}</pre>}
     </div>
   );
 }

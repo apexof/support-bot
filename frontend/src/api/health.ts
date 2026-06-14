@@ -1,10 +1,14 @@
-import { apiRequest } from "./client";
+import { z } from "zod";
+import client from "./client";
 
-export interface HealthResponse {
-  status: string;
-  provider: string;
-}
+const healthSchema = z.object({
+  status: z.string(),
+  provider: z.string(),
+});
 
-export function getHealth(): Promise<HealthResponse> {
-  return apiRequest<HealthResponse>("/health");
+export type HealthResponse = z.infer<typeof healthSchema>;
+
+export async function getHealth(): Promise<HealthResponse> {
+  const { data } = await client.get("/health");
+  return healthSchema.parse(data);
 }
