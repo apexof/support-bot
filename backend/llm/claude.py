@@ -17,7 +17,7 @@ class ClaudeProvider(LLMProvider):
     ) -> AsyncGenerator[str, None]:
         async with self._client.messages.stream(
             model=self._model,
-            max_tokens=1024,
+            max_tokens=512,
             system=system,
             messages=messages,
         ) as s:

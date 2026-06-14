@@ -13,7 +13,7 @@ class Config(BaseSettings):
     OLLAMA_HOST: str = "http://localhost:11434"
 
     ANTHROPIC_API_KEY: str | None = None
-    CLAUDE_MODEL: str = "claude-sonnet-4-6"
+    CLAUDE_MODEL: str = "claude-haiku-4-5"
 
     ALLOWED_ORIGINS: list[str] = ["http://localhost:5173"]
 
