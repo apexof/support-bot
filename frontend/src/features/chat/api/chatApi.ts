@@ -36,6 +36,6 @@ export async function* streamChat(
       throw new Error(parsed.message)
     }
     if (event.data === "[DONE]") return
-    yield event.data
+    yield JSON.parse(event.data) as string
   }
 }

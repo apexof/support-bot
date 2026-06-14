@@ -30,7 +30,7 @@ async def _event_stream(
         async for chunk in stream_chat(
             messages, request=request, provider_name=provider
         ):
-            yield f"data: {chunk}\n\n"
+            yield f"data: {json.dumps(chunk)}\n\n"
         yield "data: [DONE]\n\n"
     except Exception as e:
         yield f"event: error\ndata: {json.dumps({'message': _extract_error_message(e)})}\n\n"
