@@ -18,6 +18,15 @@
 - **Никогда не делать коммиты в git.**
 - **Для документации библиотек и примеров кода использовать context7 MCP.**
 
+## Стандарт качества
+
+Этот проект — не минимальный MVP и не учебная поделка. Цель: показать уровень больших компаний.
+
+- **Никогда не идти по пути минимального сопротивления.** Если есть индустриальный стандарт — используем его.
+- **Использовать правильные библиотеки** для правильных задач, даже если "можно написать самому".
+- **Архитектурные решения** должны быть такими, которые не стыдно показать на code review в топовой компании.
+- **Каждый инструмент в стеке** должен быть осознанным выбором, а не случайным.
+
 ## Цель автора
 
 Senior Frontend Engineer (React/TS, 8+ лет), осваивает Python и LLM-стек.
@@ -44,7 +53,7 @@ Senior Frontend Engineer (React/TS, 8+ лет), осваивает Python и LLM
 
 ### Frontend (тонкий клиент)
 
-- **Vite + React + TypeScript + Tailwind**
+- **Vite + React + TypeScript + CSS Modules**
 - Деплой: **Vercel** (статика)
 - **axios** — HTTP-клиент (единственное место вызова — `api/client.ts`)
 - **zod** — валидация ответов бека в рантайме, типы выводятся через `z.infer`
@@ -77,6 +86,23 @@ src/
 - Границы слоёв защищены `eslint-plugin-boundaries` + `eslint-import-resolver-typescript`.
   Неверный импорт (например из `shared` в `features`) — ошибка линтера. Проверка: `npm run lint`.
 
+#### Где хранить типы
+
+Типы делятся на два вида — доменные и API-контракт:
+
+- **Доменные типы** (что такое сущность: `Message`, `User`) — в `features/<name>/types.ts`. Используются во всех частях фичи: хуках, компонентах, API. Экспортируются наружу через `index.ts` если нужны другим слоям.
+- **API-типы** (что передаём на сервер: `ChatRequest`) — в `api/<name>Api.ts` рядом с функцией запроса. Если используются только внутри файла — без `export`.
+- **Локальные типы компонентов** (`Props`, `State`) — объявляются прямо в файле компонента, никогда не экспортируются.
+- Zod-схемы (`healthSchema`) остаются в `api/*.ts` — они нужны для валидации ответа бека на системной границе. Тип выводится через `z.infer` и экспортируется, схема — нет.
+
+Циклические зависимости контролируются правилом `import-x/no-cycle` в eslint — любой цикл будет ошибкой линтера.
+
+#### Правила экспортов
+
+- `export` ставим только если символ используется снаружи файла. Если функция, константа или тип нужны только внутри — без `export`.
+- Исключение: компоненты React в отдельных файлах всегда экспортируются — иначе их нельзя импортировать и `react-refresh` не работает.
+- Zod-схемы не экспортируются если используются только для вывода типа внутри файла — в этом случае схему заменяем на `interface`.
+
 #### Правила импортов
 
 ```typescript
@@ -105,6 +131,7 @@ import ChatWidget from "@/features/chat/components/ChatWidget";
 // ✅ Правильно
 import { type FC } from "react";
 import { cn } from "@/shared/lib";
+import s from "./Button.module.css";
 
 interface Props {
   onClick: () => void;
@@ -119,7 +146,7 @@ export const Button: FC<Props> = (props) => {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={cn(s.button, s[variant], disabled && s.disabled)}
+      className={cn(s.button, s[variant], disabled && s.isDisabled)}
     >
       {children}
     </button>
@@ -129,6 +156,49 @@ export const Button: FC<Props> = (props) => {
 // ❌ Неправильно — нет FC, деструктуризация в параметрах, export default
 export default function Button({ children, onClick }: Props) {
   return <button onClick={onClick}>{children}</button>;
+}
+```
+
+#### Стилизация — CSS Modules
+
+Глобальный CSS (`index.css`) — только для CSS-переменных (`:root`), reset (`*`, `body`, `html`) и dark mode media query. Никаких глобальных классов.
+
+Каждый компонент стилизуется через свой `ComponentName.module.css`:
+
+```
+ComponentName/
+├── ComponentName.tsx
+└── ComponentName.module.css
+```
+
+**Правила:**
+- Импорт стилей — всегда с алиасом `s`: `import s from "./ComponentName.module.css"`.
+- Имена классов — только camelCase: `.buttonPrimary`, `.isDisabled`. Никогда kebab-case.
+- Для комбинирования — `cn` из `@/shared/lib`. Никогда шаблонные строки.
+- Никаких inline стилей в компонентах.
+- Никаких комментариев в CSS — имена классов должны быть самодокументирующимися.
+- CSS-переменные из `index.css` доступны во всех модулях через `var(--accent)` и т.д.
+
+```css
+/* ✅ Button.module.css */
+.button {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.secondary {
+  background: var(--border);
+  color: var(--text-h);
+}
+
+.isDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 ```
 
@@ -153,18 +223,28 @@ support-bot/
 ├── backend/              # FastAPI, Python
 │   ├── .venv/            # виртуальное окружение (git ignore)
 │   ├── .env              # секреты и настройки (git ignore)
-│   ├── config.py         # чтение .env, единая точка конфигурации
-│   ├── llm.py            # абстракция провайдера (Ollama/Claude)
-│   ├── main.py           # FastAPI-приложение, эндпоинты
+│   ├── config.py         # Pydantic Settings, единая точка конфигурации
+│   ├── main.py           # создание app, подключение роутеров
+│   ├── llm/              # абстракция LLM-провайдеров
+│   │   ├── base.py       # абстрактный класс LLMProvider
+│   │   ├── claude.py     # ClaudeProvider
+│   │   ├── ollama.py     # OllamaProvider
+│   │   └── factory.py    # get_provider() — выбор по имени
+│   ├── chat/             # фича чата
+│   │   ├── router.py     # HTTP-эндпоинты
+│   │   ├── schemas.py    # Pydantic модели запроса/ответа
+│   │   └── service.py    # бизнес-логика
+│   ├── prompts/
+│   │   └── system.txt    # system prompt
 │   └── requirements.txt
 └── frontend/             # Vite + React + TypeScript
-    ├── .env.local         # VITE_API_URL (git ignore)
+    ├── .env.local        # VITE_API_URL (git ignore)
     └── src/
-        ├── app/           # глобальные провайдеры
-        ├── pages/         # страницы (home, ...)
-        ├── features/      # фичи (health-check, chat, ...)
-        ├── shared/        # общий код (api client, утилиты)
-        └── main.tsx       # точка входа
+        ├── app/          # глобальные провайдеры, index.css
+        ├── pages/        # страницы (home, ...)
+        ├── features/     # фичи (health-check, chat, ...)
+        ├── shared/       # общий код (api client, lib/cn, ...)
+        └── main.tsx      # точка входа
 ```
 
 ## План развития (roadmap)
@@ -180,4 +260,4 @@ support-bot/
 - Безопасность: секреты только в `.env`, никогда не коммитятся, ключ только на бекенде.
 - Архитектура закладывается под весь roadmap сразу, но реализуется поэтапно —
   стек по ходу не меняем.
-- Вызов модели — всегда через `llm.py`, нигде больше напрямую к провайдеру не обращаемся.
+- Вызов модели — всегда через `llm/factory.py` → `LLMProvider`, нигде больше напрямую к провайдеру не обращаемся.

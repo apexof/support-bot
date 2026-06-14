@@ -1,18 +1,6 @@
 import { type FC } from "react";
-import { useHealth } from "@/features/health-check";
-import { getErrorMessage } from "@/shared/api";
+import { ChatWidget } from "@/features/chat";
 
 export const HomePage: FC = () => {
-  const { data, error, isFetching, refetch } = useHealth();
-
-  return (
-    <div style={{ padding: 32, fontFamily: "monospace" }}>
-      <h1>Support Bot</h1>
-      <button onClick={() => { void refetch(); }} disabled={isFetching}>
-        {isFetching ? "Loading..." : "Ping backend /health"}
-      </button>
-      {data && <pre style={{ marginTop: 16 }}>{JSON.stringify(data, null, 2)}</pre>}
-      {error && <pre style={{ marginTop: 16, color: "red" }}>{getErrorMessage(error)}</pre>}
-    </div>
-  );
-}
+  return <ChatWidget />;
+};

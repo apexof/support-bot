@@ -1,0 +1,21 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.error {
+  padding: 8px 20px;
+  font-size: 13px;
+  color: #ef4444;
+  flex-shrink: 0;
+}

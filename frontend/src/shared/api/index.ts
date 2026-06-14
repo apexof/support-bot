@@ -1,2 +1,2 @@
-export { default as client } from "./client";
+export { client } from "./client";
 export { getErrorMessage } from "./errors";

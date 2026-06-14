@@ -4,6 +4,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 import boundaries from "eslint-plugin-boundaries";
+import importX from "eslint-plugin-import-x";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 const FSD_LAYERS = ["app", "pages", "features", "shared"];
@@ -34,6 +35,13 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-return": "error",
       "@typescript-eslint/no-unsafe-argument": "error",
       "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
+    },
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: { "import-x": importX },
+    rules: {
+      "import-x/no-cycle": "error",
     },
   },
   {
