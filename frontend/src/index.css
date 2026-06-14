@@ -1,30 +1,48 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --accent: #aa3bff;
-  --accent-hover: #9333ea;
+  --text: rgba(255, 255, 255, 0.45);
+  --text-h: rgba(255, 255, 255, 0.92);
+  --accent: #10b981;
+  --accent-hover: #059669;
+  --accent-subtle: rgba(16, 185, 129, 0.12);
 
-  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-bg-strong: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(24px);
+
+  --bubble-user-from: #059669;
+  --bubble-user-to: #10b981;
+
+  --sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
 
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.5;
   color: var(--text);
-  background: var(--bg);
-  color-scheme: light dark;
+  color-scheme: dark;
   -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --accent: #c084fc;
-    --accent-hover: #a855f7;
+    --text: rgba(20, 30, 25, 0.5);
+    --text-h: rgba(10, 20, 15, 0.92);
+    --accent: #059669;
+    --accent-hover: #047857;
+    --accent-subtle: rgba(5, 150, 105, 0.1);
+
+    --glass-bg: rgba(255, 255, 255, 0.5);
+    --glass-bg-strong: rgba(255, 255, 255, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.75);
+    --glass-blur: blur(20px);
+
+    --bubble-user-from: #047857;
+    --bubble-user-to: #059669;
+
+    color-scheme: light;
   }
 }
 
@@ -36,13 +54,31 @@
 
 body {
   margin: 0;
+  min-height: 100svh;
+  background: #0a0a0a;
+  background-image:
+    radial-gradient(ellipse at 15% 60%, rgba(16, 185, 129, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(5, 150, 105, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 95%, rgba(6, 95, 70, 0.15) 0%, transparent 50%),
+    linear-gradient(160deg, #0a0a0a 0%, #0d1210 50%, #0a0f0d 100%);
+  background-attachment: fixed;
 }
 
-h1 {
+@media (prefers-color-scheme: light) {
+  body {
+    background: #f0faf6;
+    background-image:
+      radial-gradient(ellipse at 15% 60%, rgba(16, 185, 129, 0.2) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 15%, rgba(5, 150, 105, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 95%, rgba(110, 231, 183, 0.25) 0%, transparent 50%),
+      linear-gradient(160deg, #f0faf6 0%, #e6f7f1 50%, #d1fae5 100%);
+  }
+}
+
+h1,
+h2,
+h3 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--text-h);
 }
 
 p {
