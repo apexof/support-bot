@@ -1,16 +1,16 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { Providers } from "./app/providers";
-import { HomePage } from "./pages/home";
-import "./index.css";
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
+import { Providers } from "./app/providers"
+import "./index.css"
+import { HomePage } from "./pages/home"
 
-const rootElement = document.getElementById("root");
-if (!rootElement) throw new Error("Root element #root not found");
+const rootElement = document.getElementById("root")
+if (!rootElement) throw new Error("Root element #root not found")
 
 createRoot(rootElement).render(
   <StrictMode>
     <Providers>
       <HomePage />
     </Providers>
-  </StrictMode>
-);
+  </StrictMode>,
+)

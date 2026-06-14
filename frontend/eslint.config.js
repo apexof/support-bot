@@ -1,13 +1,13 @@
-import js from "@eslint/js";
-import globals from "globals";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import tseslint from "typescript-eslint";
-import boundaries from "eslint-plugin-boundaries";
-import importX from "eslint-plugin-import-x";
-import { defineConfig, globalIgnores } from "eslint/config";
+import js from "@eslint/js"
+import boundaries from "eslint-plugin-boundaries"
+import importX from "eslint-plugin-import-x"
+import reactHooks from "eslint-plugin-react-hooks"
+import reactRefresh from "eslint-plugin-react-refresh"
+import { defineConfig, globalIgnores } from "eslint/config"
+import globals from "globals"
+import tseslint from "typescript-eslint"
 
-const FSD_LAYERS = ["app", "pages", "features", "shared"];
+const FSD_LAYERS = ["app", "pages", "features", "shared"]
 
 export default defineConfig([
   globalIgnores(["dist"]),
@@ -63,12 +63,12 @@ export default defineConfig([
         {
           default: "disallow",
           rules: [
-            { from: { type: "app" },      allow: { to: { type: ["pages", "features", "shared"] } } },
-            { from: { type: "pages" },    allow: { to: { type: ["features", "shared"] } } },
+            { from: { type: "app" }, allow: { to: { type: ["pages", "features", "shared"] } } },
+            { from: { type: "pages" }, allow: { to: { type: ["features", "shared"] } } },
             { from: { type: "features" }, allow: { to: { type: "shared" } } },
           ],
         },
       ],
     },
   },
-]);
+])

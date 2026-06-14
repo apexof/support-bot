@@ -1,1 +1,1 @@
-export { streamChat } from "./chatApi";
+export { streamChat } from "./chatApi"

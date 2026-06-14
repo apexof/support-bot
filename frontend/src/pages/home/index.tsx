@@ -1,6 +1,6 @@
-import { type FC } from "react";
-import { ChatWidget } from "@/features/chat";
+import { ChatWidget } from "@/features/chat"
+import { type FC } from "react"
 
 export const HomePage: FC = () => {
-  return <ChatWidget />;
-};
+  return <ChatWidget />
+}

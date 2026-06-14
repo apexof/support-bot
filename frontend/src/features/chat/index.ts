@@ -1,2 +1,2 @@
-export { ChatWidget } from "./components/ChatWidget";
-export type { Message } from "./types";
+export { ChatWidget } from "./components/ChatWidget"
+export type { Message } from "./types"

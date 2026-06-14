@@ -1,11 +1,11 @@
-import { type FC } from "react";
-import { useChat } from "../hooks/useChat";
-import { MessageList } from "./MessageList";
-import { ChatInput } from "./ChatInput";
-import s from "./ChatWidget.module.css";
+import { type FC } from "react"
+import { useChat } from "../hooks/useChat"
+import { ChatInput } from "./ChatInput"
+import s from "./ChatWidget.module.css"
+import { MessageList } from "./MessageList"
 
 export const ChatWidget: FC = () => {
-  const { messages, isStreaming, error, sendMessage, stopStreaming } = useChat();
+  const { messages, isStreaming, error, sendMessage, stopStreaming } = useChat()
 
   return (
     <div className={s.root}>
@@ -15,10 +15,12 @@ export const ChatWidget: FC = () => {
       <MessageList messages={messages} />
       {error && <div className={s.error}>{error}</div>}
       <ChatInput
-        onSend={(content) => { void sendMessage(content); }}
+        onSend={(content) => {
+          void sendMessage(content)
+        }}
         onStop={stopStreaming}
         isStreaming={isStreaming}
       />
     </div>
-  );
-};
+  )
+}
