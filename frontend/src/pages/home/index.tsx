@@ -1,7 +1,8 @@
+import { type FC } from "react";
 import { useHealth } from "@/features/health-check";
 import { getErrorMessage } from "@/shared/api";
 
-export function HomePage() {
+export const HomePage: FC = () => {
   const { data, error, isFetching, refetch } = useHealth();
 
   return (

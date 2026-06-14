@@ -1,14 +1,12 @@
+import { type FC, type PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { ReactNode } from "react";
 
 const queryClient = new QueryClient();
 
-interface ProvidersProps {
-  children: ReactNode;
-}
+export const Providers: FC<PropsWithChildren> = (props) => {
+  const { children } = props;
 
-export function Providers({ children }: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-}
+};
