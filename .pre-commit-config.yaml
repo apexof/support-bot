@@ -18,7 +18,7 @@ repos:
       - id: mypy
         name: mypy (type check)
         language: system
-        entry: backend/.venv/bin/mypy backend
+        entry: bash -c "cd backend && .venv/bin/mypy ."
         pass_filenames: false
         types: [python]
 

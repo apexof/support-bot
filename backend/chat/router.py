@@ -1,5 +1,6 @@
 import json
 from collections.abc import AsyncGenerator
+from typing import Literal
 
 import anthropic
 from fastapi import APIRouter, Request
@@ -20,9 +21,15 @@ def _extract_error_message(e: Exception) -> str:
     return str(e)
 
 
-async def _event_stream(messages: list[dict], provider: str | None) -> AsyncGenerator[str, None]:
+async def _event_stream(
+    messages: list[dict],
+    provider: Literal["ollama", "claude"] | None,
+    request: Request,
+) -> AsyncGenerator[str, None]:
     try:
-        async for chunk in stream_chat(messages, provider_name=provider):
+        async for chunk in stream_chat(
+            messages, request=request, provider_name=provider
+        ):
             yield f"data: {chunk}\n\n"
         yield "data: [DONE]\n\n"
     except Exception as e:
@@ -34,7 +41,7 @@ async def _event_stream(messages: list[dict], provider: str | None) -> AsyncGene
 async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
     messages = [m.model_dump() for m in body.messages]
     return StreamingResponse(
-        _event_stream(messages, body.provider),
+        _event_stream(messages, body.provider, request),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

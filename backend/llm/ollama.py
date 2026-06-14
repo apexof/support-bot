@@ -25,4 +25,6 @@ class OllamaProvider(LLMProvider):
             messages=ollama_messages,
             stream=True,
         ):
-            yield part.message.content
+            content = part.message.content
+            if content is not None:
+                yield content
