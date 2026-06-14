@@ -31,6 +31,10 @@ export async function* streamChat(
     .pipeThrough(new EventSourceParserStream());
 
   for await (const event of eventStream) {
+    if (event.event === "error") {
+      const parsed = JSON.parse(event.data) as { message: string };
+      throw new Error(parsed.message);
+    }
     if (event.data === "[DONE]") return;
     yield event.data;
   }

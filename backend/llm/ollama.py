@@ -1,17 +1,13 @@
 from collections.abc import AsyncGenerator
 
-import httpx
 import ollama
 
 from llm.base import LLMProvider
 
 
 class OllamaProvider(LLMProvider):
-    def __init__(self, host: str, model: str) -> None:
-        self._client = ollama.AsyncClient(
-            host=host,
-            transport=httpx.AsyncHTTPTransport(),
-        )
+    def __init__(self, client: ollama.AsyncClient, model: str) -> None:
+        self._client = client
         self._model = model
 
     async def stream(

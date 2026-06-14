@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from chat.router import router as chat_router
 from config import config
@@ -16,6 +17,11 @@ app.add_middleware(
 app.include_router(chat_router)
 
 
+class HealthResponse(BaseModel):
+    status: str
+    provider: str
+
+
 @app.get("/health")
-async def health() -> dict:
-    return {"status": "ok", "provider": config.LLM_PROVIDER}
+async def health() -> HealthResponse:
+    return HealthResponse(status="ok", provider=config.LLM_PROVIDER)

@@ -1,3 +1,4 @@
+import json
 from collections.abc import AsyncGenerator
 
 from fastapi import APIRouter
@@ -10,9 +11,12 @@ router = APIRouter()
 
 
 async def _event_stream(messages: list[dict], provider: str | None) -> AsyncGenerator[str, None]:
-    async for chunk in stream_chat(messages, provider_name=provider):
-        yield f"data: {chunk}\n\n"
-    yield "data: [DONE]\n\n"
+    try:
+        async for chunk in stream_chat(messages, provider_name=provider):
+            yield f"data: {chunk}\n\n"
+        yield "data: [DONE]\n\n"
+    except Exception as e:
+        yield f"event: error\ndata: {json.dumps({'message': str(e)})}\n\n"
 
 
 @router.post("/chat")
