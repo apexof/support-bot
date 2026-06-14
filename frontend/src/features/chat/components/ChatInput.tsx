@@ -1,4 +1,5 @@
 import { Button } from "@/shared/ui"
+import { SendHorizontal, Square } from "lucide-react"
 import { useState, type FC, type KeyboardEvent } from "react"
 import s from "./ChatInput.module.css"
 
@@ -36,16 +37,16 @@ export const ChatInput: FC<Props> = (props) => {
         }}
         onKeyDown={handleKeyDown}
         disabled={isStreaming}
-        placeholder="Напишите сообщение... (Enter — отправить, Shift+Enter — новая строка)"
+        placeholder="Введите текст..."
         rows={1}
       />
       {isStreaming ? (
         <Button variant="ghost" onClick={onStop}>
-          Стоп
+          <Square size={16} />
         </Button>
       ) : (
         <Button onClick={handleSend} disabled={!value.trim()}>
-          Отправить
+          <SendHorizontal size={16} />
         </Button>
       )}
     </div>

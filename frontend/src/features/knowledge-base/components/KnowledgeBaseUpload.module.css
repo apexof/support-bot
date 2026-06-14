@@ -97,3 +97,10 @@
 .removeBtn:hover {
   color: #fca5a5;
 }
+
+@media (max-width: 600px) {
+  .dropzone,
+  .loaded {
+    width: 100%;
+  }
+}
