@@ -26,16 +26,23 @@ export async function* streamChat(
     throw new Error("Response body is empty")
   }
 
-  const eventStream = response.body
+  const reader = response.body
     .pipeThrough(new TextDecoderStream())
     .pipeThrough(new EventSourceParserStream())
+    .getReader()
 
-  for await (const event of eventStream) {
-    if (event.event === "error") {
-      const parsed = JSON.parse(event.data) as { message: string }
-      throw new Error(parsed.message)
+  try {
+    for (;;) {
+      const { done, value: event } = await reader.read()
+      if (done) break
+      if (event.event === "error") {
+        const parsed = JSON.parse(event.data) as { message: string }
+        throw new Error(parsed.message)
+      }
+      if (event.data === "[DONE]") return
+      yield JSON.parse(event.data) as string
     }
-    if (event.data === "[DONE]") return
-    yield JSON.parse(event.data) as string
+  } finally {
+    reader.releaseLock()
   }
 }

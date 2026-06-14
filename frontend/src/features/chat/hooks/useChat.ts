@@ -24,10 +24,9 @@ export function useChat() {
     try {
       for await (const chunk of streamChat({ messages: nextMessages }, controller.signal)) {
         setMessages((prev) => {
-          const last = prev[prev.length - 1]
+          const last = prev.at(-1)
           if (!last) return prev
-          const updated: Message = { ...last, content: last.content + chunk }
-          return [...prev.slice(0, -1), updated]
+          return [...prev.slice(0, -1), { ...last, content: last.content + chunk }]
         })
       }
     } catch (err) {
