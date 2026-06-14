@@ -212,6 +212,25 @@ ComponentName/
 - **CORS** настроен на бекенде (фронт и бек на разных доменах)
 - `ANTHROPIC_API_KEY` живёт ТОЛЬКО на бекенде, в браузер не попадает
 
+### Инструменты качества (бекенд)
+
+- **ruff** — линтер и форматтер Python (заменяет flake8 + isort + black). Конфиг: `backend/ruff.toml`
+- **mypy** — статическая типизация Python
+- **pre-commit** — хуки перед коммитом: ruff check, ruff format, mypy, eslint, tsc
+- Зависимости для разработки: `backend/requirements-dev.txt` (включает `requirements.txt`)
+
+### Команды разработки (Makefile в корне)
+
+```
+make backend        # запуск FastAPI dev-сервера (uvicorn --reload)
+make frontend       # запуск Vite dev-сервера
+make install        # установка всех зависимостей (бек + фронт)
+make lint           # ruff check + eslint
+make check          # mypy + tsc (проверка типов)
+make format         # ruff format + prettier
+make setup-hooks    # установка pre-commit хуков
+```
+
 ### Инфраструктура (появится на следующих этапах)
 
 - Векторная БД: **Supabase (pgvector)** — free tier
@@ -224,9 +243,12 @@ ComponentName/
 
 ```
 support-bot/
+├── Makefile              # команды разработки
+├── .pre-commit-config.yaml
 ├── backend/              # FastAPI, Python
 │   ├── .venv/            # виртуальное окружение (git ignore)
 │   ├── .env              # секреты и настройки (git ignore)
+│   ├── ruff.toml         # конфиг линтера/форматтера
 │   ├── config.py         # Pydantic Settings, единая точка конфигурации
 │   ├── main.py           # создание app, подключение роутеров
 │   ├── llm/              # абстракция LLM-провайдеров
@@ -240,7 +262,8 @@ support-bot/
 │   │   └── service.py    # бизнес-логика
 │   ├── prompts/
 │   │   └── system.txt    # system prompt
-│   └── requirements.txt
+│   ├── requirements.txt      # прод-зависимости
+│   └── requirements-dev.txt  # + ruff, mypy, pre-commit
 └── frontend/             # Vite + React + TypeScript
     ├── .env.local        # VITE_API_URL (git ignore)
     └── src/

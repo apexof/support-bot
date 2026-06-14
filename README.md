@@ -97,16 +97,17 @@ support-bot/
 
 ## Быстрый старт
 
-### Backend
+### 1. Установка зависимостей
 
 ```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+make install
 ```
 
-Создай `.env`:
+Под капотом: создаёт `backend/.venv`, ставит Python-пакеты из `requirements-dev.txt` и запускает `npm install` в `frontend/`.
+
+### 2. Конфигурация
+
+`backend/.env`:
 
 ```env
 LLM_PROVIDER=ollama          # или claude
@@ -115,26 +116,40 @@ OLLAMA_MODEL=llama3.2
 ALLOWED_ORIGINS=["http://localhost:5173"]
 ```
 
-```bash
-uvicorn main:app --reload
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-```
-
-Создай `.env.local`:
+`frontend/.env.local`:
 
 ```env
 VITE_API_URL=http://localhost:8000
 ```
 
+### 3. Запуск
+
 ```bash
-npm run dev
+make backend    # FastAPI на :8000
+make frontend   # Vite dev server на :5173
 ```
+
+### Pre-commit хуки (опционально)
+
+```bash
+make setup-hooks
+```
+
+После этого перед каждым коммитом автоматически запускаются: `ruff` (lint + format check), `mypy` и `eslint` + `tsc`.
+
+---
+
+## Команды разработки
+
+| Команда | Что делает |
+|---|---|
+| `make backend` | Запуск FastAPI dev-сервера |
+| `make frontend` | Запуск Vite dev-сервера |
+| `make install` | Установка всех зависимостей |
+| `make lint` | ESLint + Ruff по всему проекту |
+| `make check` | mypy + tsc — проверка типов |
+| `make format` | Ruff format + Prettier |
+| `make setup-hooks` | Установка pre-commit хуков |
 
 ---
 

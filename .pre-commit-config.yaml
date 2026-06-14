@@ -1,0 +1,37 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff (lint)
+        language: system
+        entry: backend/.venv/bin/ruff check backend
+        pass_filenames: false
+        types: [python]
+
+      - id: ruff-format
+        name: ruff (format)
+        language: system
+        entry: backend/.venv/bin/ruff format --check backend
+        pass_filenames: false
+        types: [python]
+
+      - id: mypy
+        name: mypy (type check)
+        language: system
+        entry: backend/.venv/bin/mypy backend
+        pass_filenames: false
+        types: [python]
+
+      - id: tsc
+        name: tsc (type check)
+        language: system
+        entry: bash -c "cd frontend && npx tsc -b --noEmit"
+        pass_filenames: false
+        types_or: [ts, tsx]
+
+      - id: eslint
+        name: eslint
+        language: system
+        entry: bash -c "cd frontend && npx eslint ."
+        pass_filenames: false
+        types_or: [ts, tsx]
