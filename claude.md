@@ -98,15 +98,15 @@ import ChatWidget from "@/features/chat/components/ChatWidget";
 - Интерфейс пропсов называется `Props` (если не экспортируется).
 - Деструктуризация пропсов — на отдельной строке, не в параметрах функции.
 - Только именованные экспорты, никогда `export default`.
+- Если единственный проп — `children`, использовать `PropsWithChildren` вместо ручного объявления интерфейса.
 - Для комбинирования классов — утилита `cn` из `@/shared/lib`, не шаблонные строки.
 
 ```typescript
 // ✅ Правильно
-import { type FC, type ReactNode } from "react";
+import { type FC } from "react";
 import { cn } from "@/shared/lib";
 
 interface Props {
-  children: ReactNode;
   onClick: () => void;
   disabled?: boolean;
   variant: "primary" | "secondary";

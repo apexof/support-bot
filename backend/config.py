@@ -1,21 +1,27 @@
-import os
-from dotenv import load_dotenv
+from typing import Literal
 
-# читает файл .env и кладёт переменные в окружение процесса
-load_dotenv()
+from pydantic import model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Config:
-    # какой провайдер: "ollama" или "claude"
-    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "ollama")
+class Config(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-    # Ollama
-    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3.2")
-    OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    LLM_PROVIDER: Literal["ollama", "claude"] = "ollama"
 
-    # Claude
-    ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
-    CLAUDE_MODEL: str = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-6")
+    OLLAMA_MODEL: str = "llama3.2"
+    OLLAMA_HOST: str = "http://localhost:11434"
+
+    ANTHROPIC_API_KEY: str = ""
+    CLAUDE_MODEL: str = "claude-sonnet-4-6"
+
+    ALLOWED_ORIGINS: list[str] = ["http://localhost:5173"]
+
+    @model_validator(mode="after")
+    def validate_api_key(self) -> "Config":
+        if self.LLM_PROVIDER == "claude" and not self.ANTHROPIC_API_KEY:
+            raise ValueError("ANTHROPIC_API_KEY is required when LLM_PROVIDER=claude")
+        return self
 
 
 config = Config()
