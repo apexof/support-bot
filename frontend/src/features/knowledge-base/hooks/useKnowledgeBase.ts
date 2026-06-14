@@ -22,14 +22,10 @@ export function useKnowledgeBase() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   })
 
-  const error =
-    (uploadMutation.error ? getErrorMessage(uploadMutation.error) : null) ??
-    (deleteMutation.error ? getErrorMessage(deleteMutation.error) : null)
-
   return {
     status,
     isUploading: uploadMutation.isPending,
-    error,
+    error: getErrorMessage(uploadMutation.error ?? deleteMutation.error),
     upload: uploadMutation.mutate,
     remove: deleteMutation.mutate,
   }
