@@ -1,6 +1,7 @@
 import json
 from collections.abc import AsyncGenerator
 
+import anthropic
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 
@@ -11,13 +12,21 @@ from limiter import limiter
 router = APIRouter()
 
 
+def _extract_error_message(e: Exception) -> str:
+    if isinstance(e, anthropic.APIStatusError) and isinstance(e.body, dict):
+        error = e.body.get("error", {})
+        if isinstance(error, dict) and "message" in error:
+            return error["message"]
+    return str(e)
+
+
 async def _event_stream(messages: list[dict], provider: str | None) -> AsyncGenerator[str, None]:
     try:
         async for chunk in stream_chat(messages, provider_name=provider):
             yield f"data: {chunk}\n\n"
         yield "data: [DONE]\n\n"
     except Exception as e:
-        yield f"event: error\ndata: {json.dumps({'message': str(e)})}\n\n"
+        yield f"event: error\ndata: {json.dumps({'message': _extract_error_message(e)})}\n\n"
 
 
 @router.post("/chat")

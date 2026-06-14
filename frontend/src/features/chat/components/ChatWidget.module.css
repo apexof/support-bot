@@ -12,10 +12,3 @@
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-
-.error {
-  padding: 8px 20px;
-  font-size: 13px;
-  color: #ef4444;
-  flex-shrink: 0;
-}

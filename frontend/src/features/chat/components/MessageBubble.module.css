@@ -31,3 +31,17 @@
   color: var(--text-h);
   border-bottom-left-radius: 4px;
 }
+
+.bubble.error {
+  background: #2d1a1a;
+  color: #f87171;
+  border-bottom-left-radius: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.errorIcon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}

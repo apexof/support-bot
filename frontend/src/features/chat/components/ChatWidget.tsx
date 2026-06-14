@@ -12,8 +12,7 @@ export const ChatWidget: FC = () => {
       <header className={s.header}>
         <h1>Support Bot</h1>
       </header>
-      <MessageList messages={messages} />
-      {error && <div className={s.error}>{error}</div>}
+      <MessageList messages={messages} error={error} />
       <ChatInput
         onSend={(content) => {
           void sendMessage(content)
