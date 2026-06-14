@@ -1,7 +1,7 @@
-import { getErrorMessage } from "./api";
-import { useHealth } from "./hooks/useHealth";
+import { useHealth } from "@/features/health-check";
+import { getErrorMessage } from "@/shared/api";
 
-function App() {
+export function HomePage() {
   const { data, error, isFetching, refetch } = useHealth();
 
   return (
@@ -15,5 +15,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

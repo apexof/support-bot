@@ -43,6 +43,34 @@ Senior Frontend Engineer (React/TS, 8+ лет), осваивает Python и LLM
 
 - **Vite + React + TypeScript + Tailwind**
 - Деплой: **Vercel** (статика)
+- **axios** — HTTP-клиент (единственное место вызова — `api/client.ts`)
+- **zod** — валидация ответов бека в рантайме, типы выводятся через `z.infer`
+- **TanStack Query** — стейт-менеджмент для серверных данных
+
+#### Архитектура фронтенда — Feature-Sliced Design (FSD)
+
+```
+src/
+├── app/            # глобальные провайдеры (QueryClient, Router и т.д.)
+├── pages/          # страницы — только композиция фич, никакой логики
+├── features/       # фичи — замкнутые модули (chat, health-check, ...)
+│   └── chat/
+│       ├── api/        # zod-схемы, типы, функции запросов
+│       ├── hooks/      # useQuery/useMutation хуки
+│       ├── components/ # UI компоненты фичи
+│       └── index.ts    # публичный экспорт — снаружи видно только его
+└── shared/         # переиспользуемое без привязки к фиче
+    └── api/            # axios client, getErrorMessage
+```
+
+**Правила:**
+- Импорты только вниз по слоям: `pages` → `features` → `shared`. Никогда в обратную сторону.
+- Между фичами импорты запрещены — только через `shared`.
+- Снаружи фичи импортируем только из её `index.ts`.
+- `useQuery` и `useMutation` — никогда напрямую в компоненте, всегда выносим в хук внутри фичи.
+- Типы возврата хуков не аннотируем явно — TS выводит их через inference.
+- Алиас `@/` указывает на `src/` — используем вместо относительных путей вида `../../`.
+- `index.ts` — только реэкспорт. Файлы с логикой называем по смыслу: `healthApi.ts`, `chatApi.ts`.
 
 ### Связь
 
@@ -65,12 +93,18 @@ support-bot/
 ├── backend/              # FastAPI, Python
 │   ├── .venv/            # виртуальное окружение (git ignore)
 │   ├── .env              # секреты и настройки (git ignore)
-│   ├── .gitignore
 │   ├── config.py         # чтение .env, единая точка конфигурации
 │   ├── llm.py            # абстракция провайдера (Ollama/Claude)
 │   ├── main.py           # FastAPI-приложение, эндпоинты
 │   └── requirements.txt
-└── frontend/             # Vite + React (позже)
+└── frontend/             # Vite + React + TypeScript
+    ├── .env.local         # VITE_API_URL (git ignore)
+    └── src/
+        ├── app/           # глобальные провайдеры
+        ├── pages/         # страницы (home, ...)
+        ├── features/      # фичи (health-check, chat, ...)
+        ├── shared/        # общий код (api client, утилиты)
+        └── main.tsx       # точка входа
 ```
 
 ## План развития (roadmap)
