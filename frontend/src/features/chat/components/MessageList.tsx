@@ -5,11 +5,12 @@ import s from "./MessageList.module.css"
 
 interface Props {
   messages: Message[]
+  isStreaming: boolean
   error: string | null
 }
 
 export const MessageList: FC<Props> = (props) => {
-  const { messages, error } = props
+  const { messages, isStreaming, error } = props
   const rootRef = useRef<HTMLDivElement>(null)
   const { ref: bottomRef, inView } = useInView()
 
@@ -20,9 +21,11 @@ export const MessageList: FC<Props> = (props) => {
 
   return (
     <div className={s.root} ref={rootRef}>
-      {messages.map((message, index) => (
-        <MessageBubble key={index} message={message} />
-      ))}
+      {messages.map((message, index) => {
+        const isLast = index === messages.length - 1
+        const isLoading = isLast && isStreaming && message.content === ""
+        return <MessageBubble key={index} message={message} isLoading={isLoading} />
+      })}
       {error && (
         <MessageBubble
           message={{ role: "assistant", content: error }}
