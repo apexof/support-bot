@@ -64,10 +64,6 @@ src/
 │   │   ├── components/# ChatWidget, MessageList, ChatInput, MessageBubble
 │   │   ├── types.ts   # domain types (Message, etc.)
 │   │   └── index.ts   # public feature API
-│   └── health-check/
-│       ├── api/       # healthApi, health schema
-│       ├── hooks/     # useHealth
-│       └── index.ts
 └── shared/
     ├── api/       # fetch client, getErrorMessage
     ├── config/    # env variables
