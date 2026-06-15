@@ -1,4 +1,4 @@
-import { env } from "@/shared/config"
+import { apiClient } from "@/shared/api"
 import { z } from "zod"
 import { type KnowledgeBaseStatus } from "../types"
 
@@ -8,7 +8,5 @@ const schema = z.object({
 })
 
 export async function fetchKnowledgeBaseStatus(): Promise<KnowledgeBaseStatus> {
-  const response = await fetch(`${env.VITE_API_URL}/knowledge-base`)
-  if (!response.ok) throw new Error("Failed to fetch knowledge base status")
-  return schema.parse(await response.json())
+  return schema.parse(await apiClient("/knowledge-base"))
 }

@@ -1,4 +1,4 @@
-import { env } from "@/shared/config"
+import { apiClient } from "@/shared/api"
 import { z } from "zod"
 
 const schema = z.object({
@@ -10,15 +10,10 @@ export async function uploadKnowledgeBase(file: File): Promise<z.infer<typeof sc
   const formData = new FormData()
   formData.append("file", file)
 
-  const response = await fetch(`${env.VITE_API_URL}/knowledge-base`, {
+  const data = await apiClient<unknown>("/knowledge-base", {
     method: "POST",
     body: formData,
   })
 
-  if (!response.ok) {
-    const body = (await response.json()) as { detail?: string }
-    throw new Error(body.detail ?? `Upload failed: ${String(response.status)}`)
-  }
-
-  return schema.parse(await response.json())
+  return schema.parse(data)
 }
