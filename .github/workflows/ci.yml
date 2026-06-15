@@ -30,7 +30,8 @@ jobs:
         run: ruff format --check backend
 
       - name: Type check (mypy)
-        run: mypy backend
+        run: mypy config.py main.py limiter.py llm/ chat/ knowledge_base/
+        working-directory: backend
 
   frontend:
     name: Frontend (Node)
