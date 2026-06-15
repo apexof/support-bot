@@ -7,8 +7,6 @@ import { defineConfig, globalIgnores } from "eslint/config"
 import globals from "globals"
 import tseslint from "typescript-eslint"
 
-const FSD_LAYERS = ["app", "pages", "features", "shared"]
-
 export default defineConfig([
   globalIgnores(["dist"]),
   {
@@ -48,10 +46,15 @@ export default defineConfig([
     files: ["src/**/*.{ts,tsx}"],
     plugins: { boundaries },
     settings: {
-      "boundaries/elements": FSD_LAYERS.map((layer) => ({
-        type: layer,
-        pattern: `src/${layer}/**`,
-      })),
+      "boundaries/elements": [
+        { type: "app", pattern: "src/app/**" },
+        // Layers with slices use capture to enforce cross-slice isolation.
+        { type: "page", pattern: "src/pages/*/**", capture: ["slice"] },
+        { type: "widget", pattern: "src/widgets/*/**", capture: ["slice"] },
+        { type: "feature", pattern: "src/features/*/**", capture: ["slice"] },
+        { type: "entity", pattern: "src/entities/*/**", capture: ["slice"] },
+        { type: "shared", pattern: "src/shared/**" },
+      ],
       "boundaries/ignore": ["src/main.tsx"],
       "import/resolver": {
         typescript: { aliasTsxExtensions: true },
@@ -63,9 +66,52 @@ export default defineConfig([
         {
           default: "disallow",
           rules: [
-            { from: { type: "app" }, allow: { to: { type: ["pages", "features", "shared"] } } },
-            { from: { type: "pages" }, allow: { to: { type: ["features", "shared"] } } },
-            { from: { type: "features" }, allow: { to: { type: "shared" } } },
+            {
+              from: { type: "app" },
+              allow: [
+                { to: { type: "page" } },
+                { to: { type: "widget" } },
+                { to: { type: "feature" } },
+                { to: { type: "entity" } },
+                { to: { type: "shared" } },
+              ],
+            },
+            // Pages can import everything below them; cross-slice imports between pages are blocked.
+            {
+              from: { type: "page" },
+              allow: [
+                { from: { type: "page" }, to: { type: "page", captured: { slice: "{{slice}}" } } },
+                { to: { type: "widget" } },
+                { to: { type: "feature" } },
+                { to: { type: "entity" } },
+                { to: { type: "shared" } },
+              ],
+            },
+            {
+              from: { type: "widget" },
+              allow: [
+                { from: { type: "widget" }, to: { type: "widget", captured: { slice: "{{slice}}" } } },
+                { to: { type: "feature" } },
+                { to: { type: "entity" } },
+                { to: { type: "shared" } },
+              ],
+            },
+            {
+              from: { type: "feature" },
+              allow: [
+                { from: { type: "feature" }, to: { type: "feature", captured: { slice: "{{slice}}" } } },
+                { to: { type: "entity" } },
+                { to: { type: "shared" } },
+              ],
+            },
+            {
+              from: { type: "entity" },
+              allow: [
+                { from: { type: "entity" }, to: { type: "entity", captured: { slice: "{{slice}}" } } },
+                { to: { type: "shared" } },
+              ],
+            },
+            { from: { type: "shared" }, allow: [{ to: { type: "shared" } }] },
           ],
         },
       ],
