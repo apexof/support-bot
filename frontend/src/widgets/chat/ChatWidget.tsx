@@ -9,7 +9,7 @@ export const ChatWidget: FC = () => {
   return (
     <div className={s.root}>
       <Header />
-      <MessageList messages={messages} error={error} />
+      <MessageList messages={messages} isStreaming={isStreaming} error={error} />
       <ChatInput
         onSend={(content) => {
           void sendMessage(content)
