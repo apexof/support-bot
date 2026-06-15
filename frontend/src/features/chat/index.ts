@@ -1,2 +1,3 @@
-export { ChatWidget } from "./components/ChatWidget"
-export type { Message } from "./types"
+export { ChatInput } from "./components/ChatInput"
+export { MessageList } from "./components/MessageList"
+export { useChat } from "./hooks/useChat"

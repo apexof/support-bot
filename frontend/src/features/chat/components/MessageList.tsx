@@ -1,7 +1,6 @@
+import { MessageBubble, type Message } from "@/entities/message"
 import { type FC, useEffect, useRef } from "react"
 import { useInView } from "react-intersection-observer"
-import { type Message } from "../types"
-import { MessageBubble } from "./MessageBubble"
 import s from "./MessageList.module.css"
 
 interface Props {

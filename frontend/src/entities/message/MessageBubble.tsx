@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib"
 import { type FC } from "react"
-import { type Message } from "../types"
+import { type Message } from "./types"
 import s from "./MessageBubble.module.css"
 
 interface Props {

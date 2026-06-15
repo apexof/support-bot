@@ -1,6 +1,6 @@
+import { type Message } from "@/entities/message"
 import { env } from "@/shared/config"
 import { EventSourceParserStream } from "eventsource-parser/stream"
-import { type Message } from "../types"
 
 interface ChatRequest {
   messages: Message[]

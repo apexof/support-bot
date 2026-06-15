@@ -1,9 +1,9 @@
 import { KnowledgeBaseUpload } from "@/features/knowledge-base"
 import { BotMessageSquare } from "lucide-react"
 import { type FC } from "react"
-import s from "./ChatHeader.module.css"
+import s from "./Header.module.css"
 
-export const ChatHeader: FC = () => {
+export const Header: FC = () => {
   return (
     <header className={s.root}>
       <div className={s.brand}>

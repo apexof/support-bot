@@ -1,7 +1,7 @@
+import { type Message } from "@/entities/message"
 import { getErrorMessage } from "@/shared/api"
 import { useRef, useState } from "react"
 import { streamChat } from "../api"
-import { type Message } from "../types"
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([])
