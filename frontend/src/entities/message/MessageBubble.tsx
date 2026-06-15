@@ -1,4 +1,5 @@
 import { cn } from "@/shared/lib"
+import { TypingIndicator } from "@/shared/ui"
 import { type FC } from "react"
 import { type Message } from "./types"
 import s from "./MessageBubble.module.css"
@@ -16,11 +17,7 @@ export const MessageBubble: FC<Props> = (props) => {
     <div className={cn(s.row, s[message.role])}>
       <div className={cn(s.bubble, s[message.role], isError && s.error)}>
         {isLoading ? (
-          <span className={s.typingDots}>
-            <span />
-            <span />
-            <span />
-          </span>
+          <TypingIndicator />
         ) : (
           <>
             {isError && <span className={s.errorIcon}>⚠</span>}
